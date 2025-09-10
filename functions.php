@@ -205,17 +205,15 @@ function roro_mock_theme_body_class( $classes ) {
     if ( is_front_page() || is_home() ) {
         $classes[] = 'login-page';
     }
-    // 例：テンプレートで判定
-    if ( is_page_template( 'page-map.php' ) ) {
-        $classes[] = 'map-page'; // ← このクラスで縦スクロール停止
-    }
-
-    // 例：スラッグで判定（/map/ ページ）
-    if ( get_post_field( 'post_name', get_post() ) === 'map' ) {
+    if ( is_page_template( 'page-map.php' ) || get_post_field( 'post_name', get_post() ) === 'map' ) {
         $classes[] = 'map-page';
     }
 
-    // 既存の見た目用クラスがあるなら一緒に返す
+    // ▼ 追加：サインアップ画面の見た目用クラス
+    if ( is_page_template( 'page-signup.php' ) || get_post_field( 'post_name', get_post() ) === 'signup' ) {
+        $classes[] = 'signup-page';
+    }
+
     return $classes;
 }
 add_filter( 'body_class', 'roro_mock_theme_body_class' );

@@ -251,7 +251,7 @@ h2, h3, h4 { margin-top: 0; }
 }
 
 /* ---------- Signup layout tweaks ---------- */
-.signup-page { display: flex; flex-direction: column; min-height: 100vh; }
+.signup-page { display: flex; flex-direction: column; min-height: 100vh; margin: 2rem;}
 .signup-page header { flex-shrink: 0; padding: 0.5rem 0.5rem; }
 .signup-page main.signup-container {
   flex-grow: 1;

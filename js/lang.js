@@ -82,7 +82,36 @@ const translations = {
     ,login_google: 'Googleでログイン'
     ,login_line: 'LINEでログイン'
     ,login_no_account: 'アカウントをお持ちでない場合は'
-    ,login_register_link: 'こちらから新規登録'
+    ,login_register_link: 'こちらから新規登録',
+    /* --- JA --- */
+    signup_title: '新規登録',
+    signup_name: 'お名前',
+    signup_furigana: 'ふりがな',
+    signup_email: 'メールアドレス',
+    signup_password: 'パスワード',
+    signup_pet_type: 'ペットの種類',
+    signup_pet_name: 'ペットのお名前',
+    signup_pet_age: 'ペットの年齢',
+    signup_address: '住所',
+    signup_phone: '電話番号',
+    signup_submit: '新規登録',
+    signup_google: 'Googleで登録',
+    signup_line: 'LINEで登録',
+    signup_already_have: 'すでにアカウントをお持ちの方は',
+    signup_login_link: 'こちらからログイン',
+    pet_dog: '犬',
+    pet_cat: '猫',
+    pet_age_puppy: '子犬/子猫 (1歳未満)',
+    pet_age_adult: '成犬/成猫 (1〜7歳)',
+    pet_age_senior: 'シニア犬/シニア猫 (7歳以上)',
+    ph_name: '山田太郎',
+    ph_furigana: 'やまだたろう',
+    ph_email: 'sample@example.com',
+    ph_password: '半角英数6文字以上',
+    ph_pet_name: 'ぽち',
+    ph_address: '東京都港区…',
+    ph_phone: '09012345678',
+    signup_required_fields: '名前、メールアドレス、パスワードは必須です',
   },
   en: {
     nav_map: 'Map',
@@ -157,7 +186,36 @@ const translations = {
     ,login_google: 'Login with Google'
     ,login_line: 'Login with LINE'
     ,login_no_account: 'If you do not have an account'
-    ,login_register_link: 'Register here'
+    ,login_register_link: 'Register here',
+    /* --- EN --- */
+    signup_title: 'Sign Up',
+    signup_name: 'Name',
+    signup_furigana: 'Phonetic (Furigana)',
+    signup_email: 'Email Address',
+    signup_password: 'Password',
+    signup_pet_type: 'Pet Type',
+    signup_pet_name: 'Pet Name',
+    signup_pet_age: 'Pet Age',
+    signup_address: 'Address',
+    signup_phone: 'Phone Number',
+    signup_submit: 'Create Account',
+    signup_google: 'Sign up with Google',
+    signup_line: 'Sign up with LINE',
+    signup_already_have: 'Already have an account?',
+    signup_login_link: 'Log in here',
+    pet_dog: 'Dog',
+    pet_cat: 'Cat',
+    pet_age_puppy: 'Puppy/Kitten (Under 1)',
+    pet_age_adult: 'Adult (1–7 years)',
+    pet_age_senior: 'Senior (7+ years)',
+    ph_name: 'Taro Yamada',
+    ph_furigana: 'yamada taro',
+    ph_email: 'sample@example.com',
+    ph_password: 'At least 6 characters',
+    ph_pet_name: 'Pochi',
+    ph_address: 'Minato, Tokyo…',
+    ph_phone: '09012345678',
+    signup_required_fields: 'Name, email, and password are required.',
   },
   zh: {
     nav_map: '地图',
@@ -232,7 +290,36 @@ const translations = {
     ,login_google: '使用 Google 登录'
     ,login_line: '使用 LINE 登录'
     ,login_no_account: '如果您没有账户'
-    ,login_register_link: '请点击这里注册'
+    ,login_register_link: '请点击这里注册',
+    /* --- ZH (简体) --- */
+    signup_title: '注册',
+    signup_name: '姓名',
+    signup_furigana: '日文假名（Furigana）',
+    signup_email: '邮箱',
+    signup_password: '密码',
+    signup_pet_type: '宠物种类',
+    signup_pet_name: '宠物名字',
+    signup_pet_age: '宠物年龄',
+    signup_address: '地址',
+    signup_phone: '电话号码',
+    signup_submit: '创建账户',
+    signup_google: '用 Google 注册',
+    signup_line: '用 LINE 注册',
+    signup_already_have: '已经有账户？',
+    signup_login_link: '在此登录',
+    pet_dog: '狗',
+    pet_cat: '猫',
+    pet_age_puppy: '幼犬/幼猫（未满1岁）',
+    pet_age_adult: '成年（1–7岁）',
+    pet_age_senior: '高龄（7岁以上）',
+    ph_name: '山田太郎',
+    ph_furigana: 'やまだたろう',
+    ph_email: 'sample@example.com',
+    ph_password: '至少 6 个字符',
+    ph_pet_name: 'ぽち',
+    ph_address: '东京都港区…',
+    ph_phone: '09012345678',
+    signup_required_fields: '姓名、邮箱和密码为必填。',
   },
   // Korean translation
   ko: {
@@ -308,7 +395,36 @@ const translations = {
     ,login_google: 'Google로 로그인'
     ,login_line: 'LINE으로 로그인'
     ,login_no_account: '계정이 없으신가요?'
-    ,login_register_link: '여기에서 등록하세요'
+    ,login_register_link: '여기에서 등록하세요',
+    /* --- KO --- */
+    signup_title: '회원가입',
+    signup_name: '이름',
+    signup_furigana: '후리가나',
+    signup_email: '이메일',
+    signup_password: '비밀번호',
+    signup_pet_type: '반려동물 종류',
+    signup_pet_name: '반려동물 이름',
+    signup_pet_age: '반려동물 나이',
+    signup_address: '주소',
+    signup_phone: '전화번호',
+    signup_submit: '회원가입',
+    signup_google: 'Google로 가입',
+    signup_line: 'LINE으로 가입',
+    signup_already_have: '이미 계정이 있으신가요?',
+    signup_login_link: '여기에서 로그인',
+    pet_dog: '개',
+    pet_cat: '고양이',
+    pet_age_puppy: '강아지/고양이 (1세 미만)',
+    pet_age_adult: '성견/성묘 (1–7세)',
+    pet_age_senior: '시니어 (7세 이상)',
+    ph_name: '야마다 타로',
+    ph_furigana: 'やまだたろう',
+    ph_email: 'sample@example.com',
+    ph_password: '최소 6자',
+    ph_pet_name: '포치',
+    ph_address: '도쿄도 미나토구…',
+    ph_phone: '09012345678',
+    signup_required_fields: '이름, 이메일, 비밀번호는 필수입니다.',
   }
 };
 

@@ -7,6 +7,13 @@
   完了後に直接マップページへ遷移します。
 */
 
+// ▼ 追加：i18n ヘルパ（常に最新の言語設定を参照）
+const getLang = () => localStorage.getItem('userLang') || 'ja';
+const t = (k, fb) => {
+  const lang = getLang();
+  return (window.translations && translations[lang] && translations[lang][k]) || fb || k;
+};
+
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('signup-form');
   if (form) {
@@ -22,15 +29,19 @@ document.addEventListener('DOMContentLoaded', () => {
       const petAge = document.getElementById('petAge').value;
       const address = document.getElementById('address').value.trim();
       const phone = document.getElementById('phone').value.trim();
+
       if (!name || !email || !password) {
-        alert('名前、メールアドレス、パスワードは必須です');
+        // ▼ 置換：多言語対応の必須チェックメッセージ
+        alert(t('signup_required_fields', '名前、メールアドレス、パスワードは必須です'));
         return;
       }
+
       // 新しいデータ構造では pets 配列にペット情報を格納する
       const pets = [];
       if (petType) {
         pets.push({ type: petType, name: petName, age: petAge });
       }
+
       const user = {
         name,
         furigana,
@@ -40,10 +51,12 @@ document.addEventListener('DOMContentLoaded', () => {
         phone,
         pets
       };
+
       // 新規登録ユーザーを保存
       localStorage.setItem('registeredUser', JSON.stringify(user));
       // 現在のログインユーザーとしても保存
       localStorage.setItem('user', JSON.stringify(user));
+
       if (typeof RORO_ROUTES !== 'undefined' && RORO_ROUTES.map) {
         location.href = RORO_ROUTES.map;
       } else {
@@ -51,6 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
   // Google登録
   const googleBtn = document.querySelector('.google-btn');
   if (googleBtn) {
@@ -64,6 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
   // LINE登録
   const lineBtn = document.querySelector('.line-btn');
   if (lineBtn) {
