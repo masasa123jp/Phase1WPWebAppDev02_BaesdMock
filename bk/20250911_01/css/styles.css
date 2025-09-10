@@ -1,0 +1,570 @@
+/* ===========================================================
+  styles (1).css – 共通スタイル（修正版）
+  変更要旨:
+   - 【重要】html, body の 100vh 固定と overflow-y: hidden を撤回し、縦スクロールを許可
+   - 横スクロールは引き続き抑止（overflow-x: hidden）
+   - .app-header が fixed のため、本文(main)にヘッダー高ぶんの上パディングを追加
+   - 既存の #map / 外部チャット等の 100vh ベース計算は踏襲（ページ全体スクロールは可）
+=========================================================== */
+
+/*
+  styles.css – 共通スタイル
+
+  このファイルでは、すべてのHTMLページで再利用されるスタイルを定義しています。
+  スライド資料に示された「ベースカラー:#1F497D」「メインカラー:#FFC72C」
+  「アクセントカラー:#FFFFFF」をCSS変数として定義し、サイト全体の色調を統一
+  しています。また、フォームやボタン、ボトムナビゲーションなどの共通要素
+  に対するデザインもここでまとめています。
+*/
+
+:root {
+  --base-color: #1F497D;
+  --main-color: #FFC72C;
+  --accent-color: #FFFFFF;
+  --light-bg: #F9F9F9;
+  --text-color: #333333;
+  --border-radius: 8px;
+  /* ボトムナビゲーションの高さ（大きめアイコンが収まるよう 80px） */
+  --nav-height: 80px;
+  /* 共通フォント・ボタン見た目 */
+  --font-family: 'Yu Gothic', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+  --btn-glass-bg: rgba(255, 255, 255, 0.5);
+  --btn-glass-border: rgba(255, 255, 255, 0.3);
+  --btn-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+  /* レイアウト計算用（テーマ実装に合わせて調整可） */
+  --header-height: 60px;          /* 画面上部のアプリ見出し（「おでかけマップ」バー）想定 */
+  --catbar-gap: 0.5rem;           /* ヘッダーとカテゴリバーの間隔 */
+  --catbar-height: 44px;          /* カテゴリフィルタバーの見込み高さ */
+  --adminbar-height: 0px;         /* 非ログイン時は 0。 .admin-bar 時に上書き */
+}
+
+/* ログイン時: WordPress 管理バー（ツールバー）の実高さを反映（必要時に解除） */
+body.admin-bar {
+  /* --adminbar-height: 32px; */
+}
+/* 782px 以下では 46px（WordPress 既定） */
+@media screen and (max-width: 782px) {
+  body.admin-bar {
+    /* --adminbar-height: 46px; */
+  }
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-family);
+  background-color: var(--light-bg);
+  color: var(--text-color);
+  min-height: 100vh;
+  box-sizing: border-box;
+}
+
+/* ========================= 重要修正ここから ========================= */
+/* 縦スクロールを許可（従来の height:100vh / overflow-y:hidden を撤回） */
+html, body {
+  min-height: 100%;
+  overflow-x: hidden; /* 横スクロールは引き続き抑止 */
+}
+/* ========================= 重要修正ここまで ========================= */
+
+/* 管理バーぶんだけページ全体を下げる（必要時に有効化）。
+   高さ固定はスクロール抑止の原因となるため撤回。 */
+body.admin-bar { padding-top: var(--adminbar-height); }
+/* height の固定は行わない：html.admin-bar, body.admin-bar { height: ... } は削除 */
+
+header {
+  text-align: center;
+  padding: 1rem 0.5rem;
+}
+
+html #wpadminbar{
+  display: none;
+  height: 0px;
+}
+
+.logo {
+  max-width: 240px;
+  width: 70%;
+  height: auto;
+  margin: 0 auto;
+}
+
+.small-logo {
+  width: 36px;
+  height: 36px;
+  margin-right: 0.5rem;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0.5rem 1rem;
+  background-color: var(--base-color);
+  color: var(--accent-color);
+
+  position: fixed;   /* 画面上部に固定 */
+  top: 0;
+  left: 0;
+  width: 100vw;      /* ビューポート全体の幅を確保 */
+  max-width: 100%;   /* 親要素の制約があってもはみ出さない */
+  box-sizing: border-box; /* padding を含めて幅を計算 */
+  z-index: 1000;     /* 他要素より前面に */
+}
+
+.app-header h2 {
+  font-size: 1.2rem;
+  margin: 0;
+}
+
+/* ========================= 付随修正ここから ========================= */
+/* 固定ヘッダーの下に本文を安全に配置するための上パディング */
+main {
+  padding: 1rem;
+  /*padding-top: calc(var(--header-height) + 1rem);*/   /* ← 追加 */
+  padding-bottom: calc(var(--nav-height) + 1rem);
+}
+/* ========================= 付随修正ここまで ========================= */
+
+h1 {
+  font-size: 1.5rem;
+  text-align: center;
+  color: var(--base-color);
+  margin-bottom: 1rem;
+}
+
+h2, h3, h4 { margin-top: 0; }
+
+.input-group {
+  margin-bottom: 1.2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+.input-group label {
+  margin-bottom: 0.25rem;
+  font-weight: bold;
+}
+
+.input-group input,
+.input-group select {
+  padding: 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.btn {
+  display: inline-block;
+  padding: 0.6rem 1.2rem;
+  border: 1px solid transparent;
+  border-radius: var(--border-radius);
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s ease, filter 0.2s ease, box-shadow 0.2s ease;
+  background-color: var(--btn-glass-bg);
+  border-color: var(--btn-glass-border);
+  backdrop-filter: blur(6px);
+  box-shadow: var(--btn-shadow);
+}
+
+/* 言語切替ボタン（右上グローブアイコン） */
+.lang-toggle {
+  margin-left: auto;
+  width: 36px;
+  height: 36px;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+.lang-toggle img {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  filter: none;
+}
+
+/* ログインページでは言語切替ボタンを大きく表示 */
+.login-page .lang-toggle {
+  width: 48px;
+  height: 48px;
+  margin-left: 0.5rem;
+  margin-right: 0;
+}
+.login-page .lang-toggle img {
+  width: 40px;
+  height: 40px;
+}
+
+/* ---------- Login layout tweaks ---------- */
+.login-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+.login-page .login-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+}
+.login-page .login-header h1 { margin: 0; }
+.login-page .login-header .lang-toggle { margin-left: 0; margin-right: 0; }
+.login-page header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0.5rem 0.5rem;
+}
+.login-page main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-y: auto; /* ログイン画面のみ局所スクロール許可 */
+  width: 100%;
+  padding: 1rem;
+}
+.login-page form,
+.login-page .social-login,
+.login-page p {
+  width: 100%;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+}
+@media (max-width: 600px) {
+  .login-page .logo { max-width: 180px; width: 60%; margin-top: 0.5rem; }
+  .login-page h1 { font-size: 1.3rem; margin-bottom: 0.75rem; }
+  .login-page main { padding: 0.5rem; }
+}
+
+/* ---------- Signup layout tweaks ---------- */
+.signup-page { display: flex; flex-direction: column; min-height: 100vh; margin: 2rem;}
+.signup-page header { flex-shrink: 0; padding: 0.5rem 0.5rem; }
+.signup-page main.signup-container {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-y: auto; /* サインアップのみ局所スクロール許可 */
+  width: 100%;
+  padding: 1rem;
+}
+.signup-page main.signup-container h1 { text-align: center; color: var(--base-color); margin-bottom: 1rem; }
+.signup-page #signup-form,
+.signup-page .social-login,
+.signup-page p { width: 100%; max-width: 450px; margin-left: auto; margin-right: auto; }
+@media (max-width: 600px) {
+  .signup-page .logo { max-width: 180px; width: 60%; margin-top: 0.5rem; }
+  .signup-page h1 { font-size: 1.3rem; margin-bottom: 0.75rem; }
+  .signup-page main.signup-container { padding: 0.5rem; }
+}
+
+/* 雑誌グリッドの表紙画像を少し小さめに */
+.magazine-card img {
+  width: 100%;
+  height: auto;
+  max-height: 200px;
+  object-fit: contain;
+  display: block;
+  background-color: #f9f9f9;
+}
+
+/* 雑誌ページ内の表紙画像の高さ調整 */
+.magazine-viewer .book .page img {
+  height: 50%;
+  object-fit: cover;
+}
+
+.primary-btn {
+  background-color: rgba(255, 199, 44, 0.8);
+  color: var(--base-color);
+  border-color: rgba(255, 199, 44, 0.5);
+  box-shadow: var(--btn-shadow);
+}
+.btn:hover { filter: brightness(0.95); box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); }
+
+.secondary-btn {
+  background-color: rgba(255, 255, 255, 0.6);
+  color: var(--base-color);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+.danger-btn {
+  background-color: rgba(231, 76, 60, 0.8);
+  color: #ffffff;
+  border-color: rgba(231, 76, 60, 0.5);
+}
+.danger-btn:hover { filter: brightness(0.95); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+
+.social-login { margin-top: 1rem; text-align: center; }
+.social-login .btn { width: 100%; margin-bottom: 0.5rem; }
+
+.google-btn { background-color: #ffffff; color: #4285F4; border: 1px solid #ccc; }
+.line-btn   { background-color: #06c755; color: #ffffff; }
+
+/* ボトムナビ */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: var(--nav-height);
+  background-color: #ffffff;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  border-top: 1px solid #e5e5e5;
+  z-index: 1000;
+}
+.bottom-nav .nav-item {
+  flex: 1; text-align: center; color: #666;
+  text-decoration: none; font-size: 0.7rem; padding-top: 0.3rem;
+  box-sizing: border-box;
+}
+.bottom-nav .nav-item img { width: 24px; height: 24px; display: block; margin: 0 auto 2px auto; }
+.bottom-nav .nav-item.active { color: #45c397; background-color: transparent; }
+.bottom-nav .nav-item.active img { filter: none; width: 60px; height: 60px; }
+
+/* マップコンテナ（ヘッダー/カテゴリバー/管理バー/ボトムナビを考慮） */
+#map {
+  box-sizing: border-box;
+  width: 100%;
+  /* 非ログイン時の高さ: 100vh - header - catbar gap - catbar - bottom nav */
+  height: calc(100vh - var(--header-height) - var(--catbar-gap) - var(--catbar-height) - var(--nav-height));
+  overflow-y: hidden;
+}
+
+/* ページ全体の縦スクロールを停止（該当ページ限定） */
+html.map-page,
+body.map-page {
+  overflow: hidden !important;   /* ← ここがポイント */
+  height: 100vh !important;      /* iOS/Safari の安定化 */
+  overscroll-behavior: none;     /* 端でのバウンス抑止（対応ブラウザ） */
+}
+
+/* もし固定ヘッダやボトムナビがある場合、main にはスクロールを作らない */
+/* map-page では main の余白を除去し、固定配置で上下をクリップ */
+.map-page main {
+  position: fixed;
+  top: var(--header-height);
+  left: 0;
+  right: 0;
+  bottom: var(--nav-height);
+  padding: 0 !important;               /* 共通の padding を無効化（これがはみ出し原因） */
+  margin: 0 !important;
+  overflow: hidden !important;
+  box-sizing: border-box;
+}
+
+
+/* Google マップなどページ内フル画面で使う要素の高さ調整例 */
+/* マップは main の内側で 100% 高さを占有 */
+.map-page #map {
+  position: absolute;
+  top: calc(var(--catbar-gap) + var(--catbar-height)); /* 固定カテゴリバーの下から開始 */
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: auto !important;             /* 既存の height:calc(...) を無効化して確実にフィット */
+  overflow: hidden !important;
+}
+
+/* ログイン時（管理バーあり）はさらに adminbar を差し引き */
+.admin-bar #map {
+  height: calc(100vh - var(--header-height) - var(--catbar-gap) - var(--catbar-height) - var(--nav-height) - var(--adminbar-height));
+}
+
+/* もし縦スクロールバー自体を“強制的に”隠したい場合（Chrome/Safari系）
+   デバッグ用途。常用は推奨しないが、UI要件で完全非表示なら併用可。 */
+.map-page::-webkit-scrollbar,
+.map-page *::-webkit-scrollbar {
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* 雑誌グリッドとカード */
+.magazine-grid { display: flex; flex-wrap: wrap; gap: 1rem; padding: 2rem;}
+.magazine-card {
+  flex: 1 1 calc(50% - 1rem);
+  background-color: #fff; border-radius: var(--border-radius);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  overflow: hidden; display: flex; flex-direction: column;
+}
+/* （重複セレクタは既存どおり残置） */
+.magazine-card img { width: 100%; height: auto; max-height: 200px; object-fit: contain; display: block; background-color: #f9f9f9; }
+.magazine-card .magazine-info { padding: 0.5rem; }
+@media (min-width: 768px) { .magazine-card { flex: 1 1 calc(33.333% - 1rem); } }
+
+/* プロフィール */
+.profile-card { text-align: center; margin-bottom: 1rem; padding: 2rem;}
+.profile-card .avatar {
+  width: 80px; height: 80px; border-radius: 50%; background-color: #ccc;
+  margin: 0 auto 0.5rem;
+  background-image: url('../images/icon_profile.png');
+  background-size: cover; background-position: center;
+}
+.profile-card .stats { display: flex; justify-content: space-around; margin: 1rem 0; }
+.profile-card .stats div { text-align: center; }
+.profile-card .stats strong { display: block; font-size: 1.3rem; margin-bottom: 0.2rem; }
+
+/* お気に入りリスト */
+#favorites-list { list-style: none; padding: 0; margin: 0; padding: 2rem;}
+.favorite-item {
+  background-color: #fff; padding: 0.75rem; margin-bottom: 0.5rem; border-radius: var(--border-radius);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; justify-content: space-between; align-items: center; gap: 0.5rem;
+}
+.favorite-item .details { flex: 1; }
+
+/* マップページ: カテゴリフィルタバー */
+.category-bar {
+  /* position: absolute; */
+  top: calc(var(--header-height) + var(--catbar-gap)); /* 旧: 60px + 0.5rem を変数化 */
+  left: 0; right: 0;
+  display: flex; flex-wrap: nowrap; overflow-x: auto;
+  padding: 0.4rem 0.5rem; gap: 0.5rem; z-index: 5;
+  background-color: rgba(255,255,255,0.8); backdrop-filter: blur(4px);
+}
+.admin-bar .category-bar {
+  /* 管理バーがあるときはさらに下げる */
+  top: calc(var(--header-height) + var(--catbar-gap) + var(--adminbar-height));
+}
+.category-bar::-webkit-scrollbar { display: none; }
+.filter-btn {
+  white-space: nowrap;
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 9999px;
+  padding: 0.35rem 0.8rem; font-size: 0.8rem;
+  background-color: rgba(255,255,255,0.9);
+  color: var(--base-color);
+  display: flex; align-items: center; gap: 0.35rem; cursor: pointer;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  transition: background-color 0.2s ease;
+}
+.filter-btn:hover  { background-color: rgba(255,255,255,1); }
+.filter-btn.active { background-color: var(--main-color); color: var(--base-color); border-color: var(--main-color); }
+
+/* レスポンシブ調整 */
+@media (max-width: 600px) {
+  .magazine-card { flex: 1 1 100%; max-width: 100%; }
+  .bottom-nav .nav-item span { font-size: 0.6rem; }
+  .category-bar { top: calc(var(--header-height) + 0.4rem); }
+}
+@media (min-width: 600px) and (max-width: 900px) {
+  .magazine-card { flex: 1 1 calc(50% - 1rem); }
+}
+
+.favorite-item a { color: var(--base-color); text-decoration: none; font-weight: bold; }
+.favorite-item button.remove-btn {
+  background-color: rgba(231, 76, 60, 0.8); color: #fff;
+  border: 1px solid rgba(231, 76, 60, 0.5);
+  border-radius: var(--border-radius);
+  padding: 0.4rem 0.8rem; font-size: 0.8rem; cursor: pointer; box-shadow: var(--btn-shadow);
+}
+.favorite-item button.remove-btn:hover { filter: brightness(0.95); box-shadow: 0 6px 12px rgba(0,0,0,0.15); }
+
+/* チャットボックス */
+#dify-chat {
+  background-color: #fff; border-radius: var(--border-radius);
+  padding: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: flex; flex-direction: column; gap: 0.5rem;
+}
+
+/* 外部チャット（iframe 埋め込み） */
+.external-chat-container {
+  background-color: #fff; border-radius: var(--border-radius);
+  padding: 1rem; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  display: flex; flex-direction: column;
+  /* 可視高からヘッダー等を差し引き。プロジェクト要件に応じて調整可能 */
+  height: calc(100vh - var(--nav-height) - 220px);
+}
+.external-chat-container iframe {
+  width: 100%; flex: 1; border: none; border-radius: var(--border-radius); overflow: hidden;
+}
+#dify-chat .chat-messages {
+  flex: 1; max-height: 600px; overflow-y: auto; padding-right: 0.5rem;
+}
+#dify-chat .message {
+  padding: 0.5rem; border-radius: var(--border-radius); margin-bottom: 0.5rem; max-width: 80%; line-height: 1.3;
+}
+#dify-chat .message.bot  { background-color: var(--base-color); color: var(--accent-color); align-self: flex-start; }
+#dify-chat .message.user { background-color: var(--main-color); color: var(--base-color); align-self: flex-end; }
+#dify-chat { }
+#dify-chat form { display: flex; gap: 0.5rem; }
+#dify-chat input {
+  flex: 1; padding: 0.5rem; border: 1px solid #ccc; border-radius: var(--border-radius); font-size: 1rem;
+}
+.note { font-size: 0.8rem; color: #666; margin-top: 0.5rem; }
+
+/* マップページ用: 周辺表示ボタン */
+.reset-btn {
+  position: absolute;
+  bottom: calc(var(--nav-height) - 3rem); left: 1rem;
+  z-index: 5;
+  background-color: var(--main-color); color: var(--base-color);
+  border: none; border-radius: var(--border-radius);
+  padding: 0.5rem 0.8rem; font-size: 0.8rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.2); cursor: pointer;
+}
+.reset-btn:hover { filter: brightness(0.95); }
+
+/* 雑誌閲覧オーバーレイ（既存重複は維持） */
+.magazine-viewer {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  background-color: rgba(0,0,0,0.6);
+  display: flex; align-items: center; justify-content: center; z-index: 2000;
+}
+.magazine-viewer .book {
+  position: relative; width: 90%; max-width: 600px; height: 80%; perspective: 1600px;
+}
+.magazine-viewer .book .page {
+  position: absolute; width: 100%; height: 100%; background-color: #F9E9F3;
+  border-radius: var(--border-radius); box-shadow: 0 8px 12px rgba(0,0,0,0.2);
+  overflow: hidden; backface-visibility: hidden; transform-origin: left; transition: transform 0.8s ease;
+}
+.magazine-viewer .book .page.back-cover { pointer-events: none; }
+.magazine-viewer .book .page.flipped { transform: rotateY(-180deg); }
+.magazine-viewer .book .page-content {
+  padding: 1rem; box-sizing: border-box; height: 100%; overflow-y: hidden;
+}
+.magazine-viewer .page-content h3 { font-size: 1.4rem; }
+.magazine-viewer .page-content p, .magazine-viewer .page-content li { font-size: 1.1rem; line-height: 1.6; }
+.magazine-viewer .nav-arrow {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  font-size: 2rem; color: #fff; cursor: pointer; user-select: none; z-index: 10;
+}
+.magazine-viewer .nav-arrow.prev { left: -40px; }
+.magazine-viewer .nav-arrow.next { right: -40px; }
+.magazine-viewer .close-btn {
+  position: absolute; top: -40px; right: 0; font-size: 2rem; color: #fff; cursor: pointer; user-select: none; z-index: 10;
+}
+
+/* ===== Magazine Viewer (flip) – セクション複製（既存） ===== */
+.magazine-viewer { position: fixed; inset: 0; background: rgba(0,0,0,.6); display: flex; align-items: center; justify-content: center; z-index: 2000; }
+.magazine-viewer .book { position: relative; width: 90%; max-width: 600px; height: 80%; perspective: 1600px; }
+.magazine-viewer .book .page {
+  position: absolute; inset: 0; background: #fff; border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0,0,0,.18); overflow: hidden; backface-visibility: hidden; transform-origin: left center; transition: transform .6s ease;
+}
+.magazine-viewer .book .page.back-cover { pointer-events: none; }
+.magazine-viewer .book .page.flipped { transform: rotateY(-180deg); }
+.magazine-viewer .page-content { padding: 1rem; height: 100%; overflow: hidden; }
+.magazine-viewer .nav-arrow { position: absolute; top: 50%; transform: translateY(-50%); font-size: 2rem; color: #fff; cursor: pointer; user-select: none; z-index: 10; }
+.magazine-viewer .nav-arrow.prev { left: -40px; }
+.magazine-viewer .nav-arrow.next { right: -40px; }
+.magazine-viewer .close-btn { position: absolute; top: -40px; right: 0; font-size: 2rem; color: #fff; cursor: pointer; user-select: none; z-index: 10; }
+
+/* ログインページではボトムナビを非表示 */
+body.login-page .bottom-nav { display: none; }
+
+/* ここまで。管理バー対応の旧ルール（固定ヘッダー化等）は削除済み */
