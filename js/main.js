@@ -8,35 +8,31 @@
 
 // ページ読み込み時の共通処理
 document.addEventListener('DOMContentLoaded', () => {
-      // Guard against unintended URL patterns with repeated index.html segments.
-      // Some hosting environments may append another "index.html" to the URL,
-      // causing a redirect loop such as `/mock-01_logon/index.html/index.html`.
-      // Detect this pattern and replace it with a single `index.html` to
-      // stabilise the URL before any other logic runs.
-      const path = location.pathname;
-      if (/index\.html\/index\.html/.test(path)) {
-        const cleaned = path.replace(/(index\.html\/)+index\.html$/, 'index.html');
-        // Use replace() instead of assign() to avoid adding a new history entry.
-        location.replace(cleaned + location.search + location.hash);
-        return;
-      }
-  highlightNavigation();
-  // WordPress 版では .html 拡張子を持つファイル名が無い場合に
-  // ログインリダイレクトなどの処理をスキップします。静的 HTML
-  // にのみ適用されるロジックであり、WordPress では不要です。
-  const currentFile = location.pathname.split('/').pop();
-  const isHtmlBased = currentFile.includes('.html');
-  // Note: if the page is not an HTML file (e.g. WordPress pretty URL)
-  // skip the remaining login enforcement logic.
-  if (!isHtmlBased) {
+  // Guard against unintended URL patterns with repeated index.html segments.
+  // Some hosting environments may append another "index.html" to the URL,
+  // causing a redirect loop such as `/mock-01_logon/index.html/index.html`.
+  // Detect this pattern and replace it with a single `index.html` to
+  // stabilise the URL before any other logic runs.
+  const path = location.pathname;
+  if (/index\.html\/index\.html/.test(path)) {
+    const cleaned = path.replace(/(index\.html\/)+index\.html$/, 'index.html');
+    // Use replace() instead of assign() to avoid adding a new history entry.
+    location.replace(cleaned + location.search + location.hash);
     return;
   }
-  // デフォルトの登録ユーザーが存在しない場合は初期登録ユーザーを作成
+
+  highlightNavigation();
+
+  // -------------------------------------------------------------
+  // [MOD] WordPress の URL（.html を含まない）でも registeredUser を
+  //      確実に初期生成するため、早期 return の「前」に移動。
+  // -------------------------------------------------------------
   try {
     const registered = localStorage.getItem('registeredUser');
     if (!registered) {
       const defaultUser = {
         name: 'testユーザー',
+        furigana: 'テストユーザー',
         email: 'test@test.com',
         password: 'testtest!!test12345@',
         petType: 'dog',
@@ -47,27 +43,41 @@ document.addEventListener('DOMContentLoaded', () => {
       };
       localStorage.setItem('registeredUser', JSON.stringify(defaultUser));
     }
-    // 登録済みユーザーが存在しても住所が未定義の場合は設定
-    if (registered) {
+    // 既存 registeredUser があって住所が未設定なら補完
+    const regStr = localStorage.getItem('registeredUser');
+    if (regStr) {
       try {
-        const regObj = JSON.parse(registered);
+        const regObj = JSON.parse(regStr);
         if (!regObj.address || regObj.address.trim() === '') {
           regObj.address = '東京都豊島区池袋4丁目';
           localStorage.setItem('registeredUser', JSON.stringify(regObj));
         }
-      } catch (err) {
-        /* ignore */
-      }
+      } catch (err) { /* ignore */ }
     }
   } catch (e) {
     // localStorage が利用できない場合は何もしない
   }
+  // -------------------------------------------------------------
+
+  // WordPress 版では .html 拡張子を持つファイル名が無い場合に
+  // ログインリダイレクトなどの処理をスキップします。静的 HTML
+  // にのみ適用されるロジックであり、WordPress では不要です。
+  const currentFile = location.pathname.split('/').pop();
+  const isHtmlBased = currentFile.includes('.html');
+
+  // Note: if the page is not an HTML file (e.g. WordPress pretty URL)
+  // skip the remaining login enforcement logic.
+  if (!isHtmlBased) {
+    return;
+  }
+
   // 古い実装で localStorage に保存されていたセッション用 user を削除
   try {
     localStorage.removeItem('user');
   } catch (e) {
     /* ignore */
   }
+
   // 現在のページ名を取得（WordPress 版では上部で currentFile が定義済み）
   // index または signup ページ以外ではログイン必須
   const _currentFile = currentFile;
@@ -75,23 +85,24 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!unrestrictedPages.includes(_currentFile)) {
     requireLogin();
   }
+
   // すでにログイン済みで index や signup ページを開いた場合はマップへリダイレクト
-      if (isLoggedIn()) {
-        if (_currentFile === 'index.html' || _currentFile === '' || _currentFile === '/') {
-          if (typeof RORO_ROUTES !== 'undefined' && RORO_ROUTES.map) {
-            location.href = RORO_ROUTES.map;
-          } else {
-            location.href = 'map.html';
-          }
-        }
-        if (_currentFile === 'signup.html') {
-          if (typeof RORO_ROUTES !== 'undefined' && RORO_ROUTES.map) {
-            location.href = RORO_ROUTES.map;
-          } else {
-            location.href = 'map.html';
-          }
-        }
+  if (isLoggedIn()) {
+    if (_currentFile === 'index.html' || _currentFile === '' || _currentFile === '/') {
+      if (typeof RORO_ROUTES !== 'undefined' && RORO_ROUTES.map) {
+        location.href = RORO_ROUTES.map;
+      } else {
+        location.href = 'map.html';
       }
+    }
+    if (_currentFile === 'signup.html') {
+      if (typeof RORO_ROUTES !== 'undefined' && RORO_ROUTES.map) {
+        location.href = RORO_ROUTES.map;
+      } else {
+        location.href = 'map.html';
+      }
+    }
+  }
 
   // ヘッダーのロゴクリック時の遷移処理
   // small-logo クラスを持つロゴ画像がクリックされたら、

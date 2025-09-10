@@ -112,6 +112,10 @@ const translations = {
     ph_address: '東京都港区…',
     ph_phone: '09012345678',
     signup_required_fields: '名前、メールアドレス、パスワードは必須です',
+    /* --- JA --- */
+    profile_stat_favorites: 'お気に入り',
+    profile_stat_followers: 'フォロワー',
+    profile_stat_following: 'フォロー中',
   },
   en: {
     nav_map: 'Map',
@@ -216,6 +220,10 @@ const translations = {
     ph_address: 'Minato, Tokyo…',
     ph_phone: '09012345678',
     signup_required_fields: 'Name, email, and password are required.',
+    /* --- EN --- */
+    profile_stat_favorites: 'Favorites',
+    profile_stat_followers: 'Followers',
+    profile_stat_following: 'Following',
   },
   zh: {
     nav_map: '地图',
@@ -320,6 +328,10 @@ const translations = {
     ph_address: '东京都港区…',
     ph_phone: '09012345678',
     signup_required_fields: '姓名、邮箱和密码为必填。',
+    /* --- ZH (简体) --- */
+    profile_stat_favorites: '收藏',
+    profile_stat_followers: '粉丝',
+    profile_stat_following: '关注中',
   },
   // Korean translation
   ko: {
@@ -425,6 +437,10 @@ const translations = {
     ph_address: '도쿄도 미나토구…',
     ph_phone: '09012345678',
     signup_required_fields: '이름, 이메일, 비밀번호는 필수입니다.',
+    /* --- KO --- */
+    profile_stat_favorites: '즐겨찾기',
+    profile_stat_followers: '팔로워',
+    profile_stat_following: '팔로잉',
   }
 };
 
