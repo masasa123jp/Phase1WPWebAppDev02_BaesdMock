@@ -22,18 +22,6 @@ const selectedCategories = new Set(); // 選択中カテゴリ（空は全表示
 const DEFAULT_CENTER   = { lat: 35.7379528, lng: 139.7098528 };
 const DEFAULT_RADIUS_M = 5000; // 既存実装に合わせ 5km（表記ゆれ防止のため変更せず）
 
-//
-// Export these values to the global scope so that auxiliary scripts
-// (e.g. circle-toggle.js) can read them.  Without exposing
-// DEFAULT_CENTER the circle toggle code attempts to reference an
-// undefined variable which leads to an InvalidValueError when
-// constructing Google maps circles.  Similarly, DEFAULT_RADIUS_M is
-// exposed for potential future use.
-if (typeof window !== 'undefined') {
-  window.DEFAULT_CENTER = DEFAULT_CENTER;
-  window.DEFAULT_RADIUS_M = DEFAULT_RADIUS_M;
-}
-
 // デフォルト円の再利用用
 let defaultCircleGoogle = null;
 let defaultCircleHere   = null;
@@ -142,13 +130,6 @@ function initGoogleMap() {
     mapTypeControl: false,
     fullscreenControl: false
   });
-
-  // Expose the map on the window so that auxiliary scripts (e.g.
-  // circle-toggle.js) can safely access the instance.  Without this
-  // assignment the global `window.map` remains undefined and
-  // google.maps.Circle will receive an undefined `map` property, causing
-  // InvalidValueError: setMap: not an instance of Map.
-  window.map = map;
 
   infoWindow = new google.maps.InfoWindow();
 

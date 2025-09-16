@@ -127,30 +127,6 @@ main {
 }
 /* ========================= 付随修正ここまで ========================= */
 
-/*
- * Circle toggle button for map page.
- * This button allows users to toggle display of concentric range
- * circles on the map.  The position is fixed relative to the
- * viewport so that it does not scroll out of view when the page
- * content scrolls.  Adjust spacing to avoid overlapping with
- * existing controls and ensure sufficient contrast on the map
- * background.
- */
-.circle-toggle-btn {
-  position: fixed;
-  top: calc(var(--header-height) + var(--catbar-height) + 1rem);
-  right: 1rem;
-  z-index: 1100;
-  padding: 0.4rem 0.8rem;
-  font-size: 0.9rem;
-  color: var(--base-color);
-  background-color: var(--btn-glass-bg);
-  border: 1px solid var(--btn-glass-border);
-  border-radius: var(--border-radius);
-  backdrop-filter: blur(6px);
-  cursor: pointer;
-}
-
 h1 {
   font-size: 1.5rem;
   text-align: center;
@@ -533,13 +509,8 @@ body.map-page {
 /* マップページ用: 周辺表示ボタン */
 .reset-btn {
   position: absolute;
-  /* Position the reset view button just above the bottom navigation.
-     Originally the button used a negative offset which caused it to be
-     hidden behind the navigation bar.  We now position it using the
-     navigation height plus an extra margin for breathing room. */
-  bottom: calc(var(--nav-height) + 1rem);
-  left: 1rem;
-  z-index: 1050;
+  bottom: calc(var(--nav-height) - 3rem); left: 1rem;
+  z-index: 5;
   background-color: var(--main-color); color: var(--base-color);
   border: none; border-radius: var(--border-radius);
   padding: 0.5rem 0.8rem; font-size: 0.8rem;

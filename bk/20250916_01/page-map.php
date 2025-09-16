@@ -17,26 +17,13 @@ get_header();
  * 0) API キーを <meta> に出力（既存 JS から参照するため）
  * ======================================================== */
 if (!function_exists('roro_print_map_api_metas')) {
-  /**
-   * Output meta tags for configured API keys.
-   *
-   * Instead of hard‑coding a single option name, defer to the
-   * roro_get_google_maps_api_key() helper which checks environment
-   * variables, constants and a number of option names used by the
-   * legacy plugins.  This ensures that API keys saved via the
-   * roro-map or roro-core plugins are still picked up after those
-   * plugins are deactivated.  Administrators see an error log when
-   * no Google key is configured.
-   */
   function roro_print_map_api_metas() {
-    // Google Maps key: consult helper which looks up multiple sources
-    $gmaps_api_key = function_exists('roro_get_google_maps_api_key') ? roro_get_google_maps_api_key() : '';
-    // HERE key: preserve existing behaviour but also honour a constant
-    $here_api_key  = get_option('roro_here_api_key', defined('RORO_HERE_API_KEY') ? RORO_HERE_API_KEY : '');
+    // 取得ロジックは運用に合わせて調整可
+    $gmaps_api_key = get_option('roro_gmaps_api_key', defined('RORO_GMAPS_API_KEY') ? RORO_GMAPS_API_KEY : '');
+    $here_api_key  = get_option('roro_here_api_key',  defined('RORO_HERE_API_KEY')  ? RORO_HERE_API_KEY  : '');
 
     if (current_user_can('manage_options') && empty($gmaps_api_key)) {
-      // Use error_log rather than echoing to the page so as not to break markup
-      error_log('[RoRo Map] Google Maps API key is empty. Ensure one of the recognised options (e.g. roro_map_google_api_key) is set.');
+      error_log('[RoRo Map] Google Maps API key is empty. Set roro_gmaps_api_key option.');
     }
     if (!empty($gmaps_api_key)) {
       echo '<meta name="gmaps-api-key" content="' . esc_attr($gmaps_api_key) . '">' . "\n";
@@ -84,31 +71,14 @@ $__roro_locale = roro_resolve_map_locale();
  * ======================================================== */
 if (!function_exists('roro_get_google_maps_api_key')) {
   function roro_get_google_maps_api_key() {
-    // Build a list of possible sources for the Google Maps API key.
-    // The order reflects decreasing priority: environment variables,
-    // constants, various option names used by past plugins and fallback
-    // to a key stored in the roro_core_settings option.
     $candidates = array(
       getenv('RORO_GOOGLE_MAPS_API_KEY'),
       getenv('GOOGLE_MAPS_API_KEY'),
       defined('RORO_GOOGLE_MAPS_API_KEY') ? RORO_GOOGLE_MAPS_API_KEY : null,
-      // Some legacy themes defined this constant with a slightly different name
-      defined('RORO_GMAPS_API_KEY') ? RORO_GMAPS_API_KEY : null,
       get_option('roro_google_maps_api_key'),
-      get_option('roro_gmaps_api_key'),
-      get_option('roro_map_google_api_key'),
+      get_option('roro_gmaps_api_key') // 後方互換
     );
-    // Also inspect roro_core_settings for a map_api_key entry.  This
-    // option is used by the roro-core plugin to persist keys.
-    $core = get_option('roro_core_settings');
-    if (is_array($core) && !empty($core['map_api_key'])) {
-      $candidates[] = $core['map_api_key'];
-    }
-    foreach ($candidates as $v) {
-      if (!empty($v)) {
-        return $v;
-      }
-    }
+    foreach ($candidates as $v) if (!empty($v)) return $v;
     return '';
   }
 }
@@ -222,13 +192,31 @@ if ( ! empty($gmaps_key) ) {
 })();
 </script>
 
-<!--
-  Note: The original template injected fallback scripts to self-heal when
-  optimisation plugins stripped necessary assets.  In the refined theme
-  the Google Maps API and map.js are explicitly enqueued via WordPress
-  and map-loader.js defines a callback shim.  The fallback injection
-  is therefore redundant and has been removed to avoid double loading
-  and associated console warnings.
--->
+<!-- =========================================================
+     5) フォールバック（欠落時の自己回復）
+     ========================================================= -->
+<script>
+(function(){
+  var base = "<?php echo esc_js($theme_uri); ?>";
+  function has(re){ return Array.prototype.some.call(document.scripts, function(s){ return re.test(s.src || ''); }); }
+  function inject(src){ var s=document.createElement('script'); s.src=src; s.async=true; s.defer=true; document.head.appendChild(s); }
+
+  // map.js が見つからなければ注入
+  if (!has(/\/js\/map\.js(\?|$)/)) inject(base + '/js/map.js');
+
+  // Google API が見つからなければ注入
+  <?php if (!empty($gmaps_key)) : ?>
+    if (!(window.google && window.google.maps) && !has(/maps\.googleapis\.com\/maps\/api\/js/)) {
+      var url = 'https://maps.googleapis.com/maps/api/js'
+        + '?key='      + encodeURIComponent('<?php echo esc_js($gmaps_key); ?>')
+        + '&callback=' + 'initMap'
+        + '&language=' + encodeURIComponent('<?php echo esc_js($__roro_locale['language']); ?>')
+        + '&region='   + encodeURIComponent('<?php echo esc_js($__roro_locale['region']); ?>')
+        + '&loading=async&libraries=places';
+      inject(url);
+    }
+  <?php endif; ?>
+})();
+</script>
 
 <?php get_footer(); ?>
