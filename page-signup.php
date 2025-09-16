@@ -45,7 +45,14 @@ get_header();
       <select id="petType">
         <option value="dog" data-i18n-key="pet_dog">犬</option>
         <option value="cat" data-i18n-key="pet_cat">猫</option>
+        <option value="other" data-i18n-key="pet_other">その他</option>
       </select>
+    </div>
+
+    <!-- 犬種選択: 犬を選んだ場合にのみ表示/有効化します -->
+    <div class="input-group" id="breed-group" style="display:none">
+      <label for="petBreed" data-i18n-key="signup_pet_breed">犬種</label>
+      <select id="petBreed" disabled></select>
     </div>
 
     <div class="input-group">

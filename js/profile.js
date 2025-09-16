@@ -9,6 +9,16 @@
 document.addEventListener('DOMContentLoaded', () => {
   // ログインしていない場合はリダイレクト
   requireLogin();
+
+  // Translation helper functions for dynamic elements.  The
+  // translations object is defined in lang.js.  If a key is not
+  // found for the current language, the fallback or the key name
+  // itself is returned.
+  const getLang = () => localStorage.getItem('userLang') || 'ja';
+  const t = (k, fb) => {
+    const lang = getLang();
+    return (window.translations && translations[lang] && translations[lang][k]) || fb || k;
+  };
   // ユーザーデータの取得
   const userData = JSON.parse(sessionStorage.getItem('user')) || {};
   // プロフィールカードへの表示要素
@@ -75,55 +85,41 @@ document.addEventListener('DOMContentLoaded', () => {
       wrapper.style.gap = '0.5rem';
       wrapper.style.flexWrap = 'wrap';
       wrapper.style.alignItems = 'flex-end';
-      // 種類セレクト
+      // 種類セレクト: 翻訳に対応したオプションを生成
       const typeSelect = document.createElement('select');
-      typeSelect.innerHTML = `
-        <option value="dog">犬</option>
-        <option value="cat">猫</option>
-        <option value="other">その他</option>
-      `;
+      [
+        { value: 'dog', key: 'pet_dog' },
+        { value: 'cat', key: 'pet_cat' },
+        { value: 'other', key: 'pet_other' }
+      ].forEach((optData) => {
+        const opt = document.createElement('option');
+        opt.value = optData.value;
+        opt.textContent = (typeof t === 'function' ? t(optData.key, optData.value) : optData.value);
+        typeSelect.appendChild(opt);
+      });
       typeSelect.value = pet.type || 'dog';
       typeSelect.style.flex = '1 1 20%';
       // 犬種セレクト（犬の場合のみ有効）
       const breedSelect = document.createElement('select');
-      // 犬種リストの定義
-      const dogBreeds = [
+      // 犬種キーの定義（プロフィール用）
+      const breedKeys = [
         '',
-        'トイ・プードル',
-        'チワワ',
-        '混血犬（体重10kg未満）',
-        '柴',
-        'ミニチュア・ダックスフンド',
-        'ポメラニアン',
-        'ミニチュア・シュナウザー',
-        'ヨークシャー・テリア',
-        'フレンチ・ブルドッグ',
-        'マルチーズ',
-        'シー・ズー',
-        'カニーンヘン・ダックスフンド',
-        'パピヨン',
-        'ゴールデン・レトリーバー',
-        'ウェルシュ・コーギー・ペンブローク',
-        'ジャック・ラッセル・テリア',
-        'ラブラドール・レトリーバー',
-        'パグ',
-        'キャバリア・キング・チャールズ・スパニエル',
-        'ミニチュア・ピンシャー',
-        '混血犬（体重10kg以上20kg未満）',
-        'ペキニーズ',
-        'イタリアン・グレーハウンド',
-        'ボーダー・コーリー',
-        'ビーグル',
-        'ビション・フリーゼ',
-        'シェットランド・シープドッグ',
-        'ボストン・テリア',
-        'アメリカン・コッカー・スパニエル',
-        '日本スピッツ'
+        'toy_poodle','chihuahua','mix_small','shiba','miniature_dachshund','pomeranian',
+        'miniature_schnauzer','yorkshire_terrier','french_bulldog','maltese','shih_tzu',
+        'kaninchen_dachshund','papillon','golden_retriever','welsh_corgi','jack_russell',
+        'labrador_retriever','pug','cavalier_king_charles','miniature_pinscher',
+        'mix_medium','pekingese','italian_greyhound','border_collie','beagle','bichon_frise',
+        'shetland_sheepdog','boston_terrier','american_cocker_spaniel','japanese_spitz'
       ];
-      dogBreeds.forEach((breed) => {
+      breedKeys.forEach((key) => {
         const opt = document.createElement('option');
-        opt.value = breed;
-        opt.textContent = breed || '犬種を選択';
+        if (!key) {
+          opt.value = '';
+          opt.textContent = (typeof t === 'function' ? t('breed_blank', '犬種を選択') : '犬種を選択');
+        } else {
+          opt.value = key;
+          opt.textContent = (typeof t === 'function' ? t('breed_' + key, key) : key);
+        }
         breedSelect.appendChild(opt);
       });
       breedSelect.value = pet.breed || '';
@@ -134,21 +130,28 @@ document.addEventListener('DOMContentLoaded', () => {
       const nameInputEl = document.createElement('input');
       nameInputEl.type = 'text';
       nameInputEl.value = pet.name || '';
-      nameInputEl.placeholder = '名前';
+      // Placeholder uses translation for 'Name'
+      nameInputEl.placeholder = (typeof t === 'function' ? t('label_name', '名前') : '名前');
       nameInputEl.style.flex = '1 1 20%';
-      // 年齢セレクト
+      // 年齢セレクト: translated options
       const ageSelect = document.createElement('select');
-      ageSelect.innerHTML = `
-        <option value="puppy">子犬/子猫 (1歳未満)</option>
-        <option value="adult">成犬/成猫 (1〜7歳)</option>
-        <option value="senior">シニア犬/シニア猫 (7歳以上)</option>
-      `;
+      [
+        { value: 'puppy', key: 'pet_age_puppy' },
+        { value: 'adult', key: 'pet_age_adult' },
+        { value: 'senior', key: 'pet_age_senior' }
+      ].forEach((item) => {
+        const opt = document.createElement('option');
+        opt.value = item.value;
+        opt.textContent = (typeof t === 'function' ? t(item.key, item.value) : item.value);
+        ageSelect.appendChild(opt);
+      });
       ageSelect.value = pet.age || 'puppy';
       ageSelect.style.flex = '1 1 20%';
       // 削除ボタン
       const removeBtn = document.createElement('button');
       removeBtn.type = 'button';
-      removeBtn.textContent = '削除';
+      // Button label uses translation for 'delete'
+      removeBtn.textContent = (typeof t === 'function' ? t('delete', '削除') : '削除');
       // 危険操作用のボタンスタイルを適用
       removeBtn.className = 'btn danger-btn';
       removeBtn.addEventListener('click', () => {
@@ -244,4 +247,9 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  // Expose a global updater so that language switches can re-render pet forms
+  window.updateProfilePets = function() {
+    renderPets();
+  };
 });

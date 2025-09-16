@@ -16,6 +16,91 @@ const t = (k, fb) => {
 
 document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('signup-form');
+  // Dog breeds definition. Each entry uses a key for translation.
+  const dogBreeds = [
+    '',
+    'toy_poodle',
+    'chihuahua',
+    'mix_small',
+    'shiba',
+    'miniature_dachshund',
+    'pomeranian',
+    'miniature_schnauzer',
+    'yorkshire_terrier',
+    'french_bulldog',
+    'maltese',
+    'shih_tzu',
+    'kaninchen_dachshund',
+    'papillon',
+    'golden_retriever',
+    'welsh_corgi',
+    'jack_russell',
+    'labrador_retriever',
+    'pug',
+    'cavalier_king_charles',
+    'miniature_pinscher',
+    'mix_medium',
+    'pekingese',
+    'italian_greyhound',
+    'border_collie',
+    'beagle',
+    'bichon_frise',
+    'shetland_sheepdog',
+    'boston_terrier',
+    'american_cocker_spaniel',
+    'japanese_spitz'
+  ];
+
+  // Populate breed select with options based on current language
+  const breedGroup = document.getElementById('breed-group');
+  const breedSelect = document.getElementById('petBreed');
+  function populateBreeds() {
+    if (!breedSelect) return;
+    breedSelect.innerHTML = '';
+    dogBreeds.forEach((key) => {
+      const opt = document.createElement('option');
+      if (!key) {
+        // placeholder option
+        opt.value = '';
+        opt.textContent = t('breed_blank', '犬種を選択');
+      } else {
+        opt.value = key;
+        opt.textContent = t('breed_' + key, key);
+      }
+      breedSelect.appendChild(opt);
+    });
+  }
+
+  populateBreeds();
+
+  // Handle pet type change to show/hide breed select
+  const petTypeSelect = document.getElementById('petType');
+  function updateBreedVisibility() {
+    const type = petTypeSelect.value;
+    if (type === 'dog') {
+      if (breedGroup) breedGroup.style.display = '';
+      if (breedSelect) breedSelect.disabled = false;
+    } else {
+      if (breedGroup) breedGroup.style.display = 'none';
+      if (breedSelect) {
+        breedSelect.disabled = true;
+        breedSelect.value = '';
+      }
+    }
+  }
+  if (petTypeSelect) {
+    petTypeSelect.addEventListener('change', () => {
+      updateBreedVisibility();
+    });
+    // initialise on load
+    updateBreedVisibility();
+  }
+
+  // Expose a global updater so that language switches can refresh breed labels
+  window.updateBreedOptions = function() {
+    populateBreeds();
+    updateBreedVisibility();
+  };
   if (form) {
     form.addEventListener('submit', (e) => {
       e.preventDefault();
@@ -39,7 +124,9 @@ document.addEventListener('DOMContentLoaded', () => {
       // 新しいデータ構造では pets 配列にペット情報を格納する
       const pets = [];
       if (petType) {
-        pets.push({ type: petType, name: petName, age: petAge });
+        // ペットの犬種（犬のみ）を取得
+        const breedVal = (petType === 'dog' && breedSelect) ? breedSelect.value : '';
+        pets.push({ type: petType, breed: breedVal, name: petName, age: petAge });
       }
 
       const user = {
